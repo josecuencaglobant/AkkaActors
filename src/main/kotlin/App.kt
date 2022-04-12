@@ -19,7 +19,9 @@ fun main(){
     FakeDB.init()
 
     var verificationActorWorker: ActorRef<DataInstruction>  = ActorSystem
-        .create(VerificationActor.behavior(),"verification")
+        .create( Behaviors.supervise( VerificationActor.behavior() ).onFailure(
+            SupervisorStrategy.restart()
+        ) ,"verification")
     var serviceKey: ServiceKey<DataInstruction> = ServiceKey.create(
         DataInstruction::class.java,"service-key"
     )
