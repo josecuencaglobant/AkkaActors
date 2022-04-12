@@ -34,7 +34,7 @@ fun main(){
 
 
     var poolDataManager: PoolRouter<DataInstruction> = Routers.pool(
-        1,
+        100,
         Behaviors.supervise( DataManageActor.behavior(verificationActor) ).onFailure(
             SupervisorStrategy.restart()
         )
