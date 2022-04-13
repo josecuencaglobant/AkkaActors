@@ -18,10 +18,7 @@ import msg.instructions.DataInstruction
 import persistance.MyPersistenceBehavior
 
 fun main(){
-    //normalActors()
-
-    var actor = MyPersistenceBehavior.create( PersistenceId("123") )
-
+    normalActors()
 }
 
 fun normalActors(){
@@ -43,7 +40,7 @@ fun normalActors(){
 
 
     var poolDataManager: PoolRouter<DataInstruction> = Routers.pool(
-        100,
+        10,
         Behaviors.supervise( DataManageActor.behavior(verificationActor) ).onFailure(
             SupervisorStrategy.restart()
         )

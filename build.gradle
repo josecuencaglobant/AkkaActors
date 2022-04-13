@@ -29,6 +29,7 @@ dependencies {
     //Persistance
     implementation "com.typesafe.akka:akka-persistence-typed_${versions.ScalaBinary}"
     testImplementation "com.typesafe.akka:akka-persistence-testkit_${versions.ScalaBinary}"
+    implementation "com.typesafe.akka:akka-persistence-testkit_2.13:2.6.19"
 
 }
 
