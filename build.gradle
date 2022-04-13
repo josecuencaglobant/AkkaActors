@@ -26,6 +26,10 @@ dependencies {
     testImplementation "com.typesafe.akka:akka-actor-testkit-typed_${versions.ScalaBinary}"
     implementation("org.slf4j:slf4j-simple:1.7.21")
 
+    //Persistance
+    implementation "com.typesafe.akka:akka-persistence-typed_${versions.ScalaBinary}"
+    testImplementation "com.typesafe.akka:akka-persistence-testkit_${versions.ScalaBinary}"
+
 }
 
 test {

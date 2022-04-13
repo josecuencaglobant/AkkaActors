@@ -9,13 +9,22 @@ import akka.actor.typed.javadsl.PoolRouter
 import akka.actor.typed.javadsl.Routers
 import akka.actor.typed.receptionist.Receptionist
 import akka.actor.typed.receptionist.ServiceKey
+import akka.persistence.typed.PersistenceId
 import db.FakeDB
 import msg.AddDataInstruction
 import msg.CheckDataInstruction
 import msg.WithDrawData
 import msg.instructions.DataInstruction
+import persistance.MyPersistenceBehavior
 
 fun main(){
+    //normalActors()
+
+    var actor = MyPersistenceBehavior.create( PersistenceId("123") )
+
+}
+
+fun normalActors(){
     FakeDB.init()
 
     var verificationActorWorker: ActorRef<DataInstruction>  = ActorSystem
