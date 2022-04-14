@@ -2,6 +2,6 @@ package shoppingcart.model
 
 class ShoppingCartState {
 
-    val items: Map<String,Int> = HashMap()
+    val items: MutableMap<String,Int> = HashMap()
 
 }

@@ -30,6 +30,8 @@ dependencies {
     implementation "com.typesafe.akka:akka-persistence-typed_${versions.ScalaBinary}"
     testImplementation "com.typesafe.akka:akka-persistence-testkit_${versions.ScalaBinary}"
     implementation "com.typesafe.akka:akka-persistence-testkit_2.13:2.6.19"
+    implementation "org.fusesource.leveldbjni:leveldbjni-all:1.8"
+    implementation "com.typesafe.akka:akka-serialization-jackson_${versions.ScalaBinary}"
 
 }
 
