@@ -16,9 +16,44 @@ import msg.CheckDataInstruction
 import msg.WithDrawData
 import msg.instructions.DataInstruction
 import persistance.MyPersistenceBehavior
+import shoppingcart.ShoppingCart
+import shoppingcart.actors.ManageResultActor
+import shoppingcart.data.*
+import shoppingcart.model.CartCommand
+import java.lang.Math.random
 
 fun main(){
-    normalActors()
+    //normalActors()
+    shoppingCart()
+}
+
+fun shoppingCart(){
+    var poolManageResult: PoolRouter<CartState> = Routers.pool(1,
+        Behaviors.supervise(ManageResultActor.behavior()).onFailure(SupervisorStrategy.restart())
+    )
+    var manageResultActor = ActorSystem.create(
+        poolManageResult.withRoundRobinRouting(),"printMessage"
+    )
+
+    var system: ActorSystem<CartCommand> = ActorSystem.create(
+        ShoppingCart.create(
+            PersistenceId("System__"+random().toString())
+        ,manageResultActor
+        ),"system"
+    )
+
+    var shoppingCart: ActorRef<CartCommand> = system
+
+    var shoes = Product("1","Shoes",13.45)
+    var pants = Product("2","Pants",9.65)
+    var bowtie = Product("3","Bowtie",4.75)
+
+    shoppingCart.tell( AddProduct(shoes) )
+    shoppingCart.tell( AddProduct(pants) )
+    shoppingCart.tell( AddProduct(bowtie) )
+    shoppingCart.tell( DeleteProduct(shoes) )
+
+
 }
 
 fun normalActors(){
