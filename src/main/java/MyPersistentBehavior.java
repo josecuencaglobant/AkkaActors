@@ -1,6 +1,8 @@
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.CommandHandler;
+import akka.persistence.typed.javadsl.Effect;
 import akka.persistence.typed.javadsl.EventHandler;
 import akka.persistence.typed.javadsl.EventSourcedBehavior;
 
@@ -14,12 +16,15 @@ interface Command {}
 
 interface Event {}
 
-    public static Behavior<Command> create(PersistenceId persistenceId) {
-        return new MyPersistentBehavior(persistenceId);
+    private ActorRef<State> subscriber;
+
+    public static Behavior<Command> create(PersistenceId persistenceId, ActorRef<State> actorRef) {
+        return new MyPersistentBehavior(persistenceId,actorRef);
     }
 
-    private MyPersistentBehavior(PersistenceId persistenceId) {
+    private MyPersistentBehavior(PersistenceId persistenceId,ActorRef<State> actorRef) {
         super(persistenceId);
+        this.subscriber = actorRef;
     }
 
     @Override
@@ -31,9 +36,22 @@ interface Event {}
     public CommandHandler<Command, Event, State> commandHandler() {
         return newCommandHandlerBuilder()
                 .forAnyState()
-                .onCommand(Add.class, command -> Effect().persist(new Added(command.data)))
-                .onCommand(Clear.class, command -> Effect().persist(Cleared.INSTANCE))
+                .onCommand(Add.class, this::onAdd)
+                .onCommand(Clear.class, this::onClear)
                 .build();
+    }
+
+    private Effect<Event, State> onAdd(Add command) {
+        return Effect()
+                .persist(new Added(command.data))
+                .thenRun(newState -> subscriber.tell(newState));
+    }
+
+    private Effect<Event, State> onClear(Clear command) {
+        return Effect()
+                .persist(Cleared.INSTANCE)
+                .thenRun(newState -> subscriber.tell(newState))
+                .thenStop();
     }
 
     @Override
@@ -70,7 +88,7 @@ interface Event {}
     }
 
     public static class State {
-        private final List<String> items;
+        public final List<String> items;
 
         private State(List<String> items) {
             this.items = items;

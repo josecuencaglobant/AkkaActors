@@ -17,8 +17,13 @@ public class App {
     }
 
     private static void eventHandlerRegular(){
+
+        ActorRef<MyPersistentBehavior.State> actor = ActorSystem.create(
+                PersistentActor.behavior(), "verificartion"
+        );
+
         ActorSystem<MyPersistentBehavior.Command> system = ActorSystem.create(
-                MyPersistentBehavior.create(new PersistenceId("12345")),"system"
+                MyPersistentBehavior.create(new PersistenceId(String.valueOf(Math.random())),actor),"system"
         );
         ActorRef<MyPersistentBehavior.Command> ref = system;
         ref.tell( new MyPersistentBehavior.Add("hola") );
