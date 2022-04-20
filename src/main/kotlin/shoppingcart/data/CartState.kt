@@ -4,7 +4,7 @@ import java.lang.StringBuilder
 
 class CartState(private val products: ArrayList<ProductOperation> = ArrayList()) {
 
-    fun addProduct(product: Product,operation: String): CartState{
+    fun addOperation(product: Product, operation: String): CartState{
         products.add( ProductOperation(product,operation) )
         return CartState(products)
     }

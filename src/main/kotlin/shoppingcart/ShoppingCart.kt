@@ -7,7 +7,6 @@ import akka.persistence.typed.javadsl.CommandHandler
 import akka.persistence.typed.javadsl.Effect
 import akka.persistence.typed.javadsl.EventHandler
 import akka.persistence.typed.javadsl.EventSourcedBehavior
-import akka.remote.artery.aeron.TaskRunner
 import shoppingcart.data.*
 import shoppingcart.model.CartCommand
 import shoppingcart.model.CartEvent
@@ -41,21 +40,28 @@ class ShoppingCart: EventSourcedBehavior<CartCommand,CartEvent,CartState> {
     private fun onAdd(command: AddProduct):Effect<CartEvent,CartState>{
         return Effect()
             .persist(ProductAdded(command.product))
-            .thenRun { state: CartState -> subscriber.tell(state) }
+            //.thenRun { state: CartState -> subscriber.tell(state) }
     }
 
     private fun onDeleted(command: DeleteProduct): Effect<CartEvent,CartState>{
         return Effect()
             .persist(ProductDeleted(command.product))
-            .thenRun { state: CartState -> subscriber.tell(state) }
+            //.thenRun { state: CartState -> subscriber.tell(state) }
     }
 
     override fun eventHandler(): EventHandler<CartState, CartEvent> {
         return newEventHandlerBuilder()
             .forAnyState()
-            .onEvent(ProductAdded::class.java){state,event -> state.addProduct(event.product,event.operation)}
-            .onEvent(ProductDeleted::class.java){state,event -> state.addProduct(event.product,event.operation)}
+            .onEvent(ProductAdded::class.java)
+            {state,event -> tellSubscriber(state.addOperation(event.product,event.operation))}
+            .onEvent(ProductDeleted::class.java)
+            {state,event -> tellSubscriber(state.addOperation(event.product,event.operation))}
             .build()
+    }
+
+    fun tellSubscriber(cartState: CartState): CartState{
+        subscriber.tell(cartState)
+        return cartState
     }
 
 }
