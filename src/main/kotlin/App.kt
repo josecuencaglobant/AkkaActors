@@ -28,7 +28,7 @@ fun main(){
 }
 
 fun shoppingCart(){
-    var poolManageResult: PoolRouter<CartState> = Routers.pool(1,
+    var poolManageResult: PoolRouter<CartState> = Routers.pool(4,
         Behaviors.supervise(ManageResultActor.behavior()).onFailure(SupervisorStrategy.restart())
     )
     var manageResultActor = ActorSystem.create(
